@@ -1,9 +1,13 @@
 #include <Servo.h>
+
 Servo myServo;
+
 byte myServoAngle = 0;
 byte myServoAngleRead = 0;
+
 #include "Wire.h"
 #define EEPROM_I2C_ADDRESS 0x50
+
 long lastWrite = 0;
 int writePointer = 0;
 int writeLimit = 200;
@@ -16,6 +20,8 @@ bool inputFlags[numOfInputs] = {LOW};
 int inputCounters[numOfInputs];
 long lastDebounceTime[numOfInputs] = {0};
 long debounceDelay = 10;
+
+
 void setup() {
   for(int i = 0; i < numOfInputs; i++) {
     pinMode(inputPins[i], INPUT);
@@ -25,11 +31,13 @@ void setup() {
   myServo.attach(9); 
   Wire.begin();
 }
+
 void loop() {
   setInputFlags();
   resolveInputFlags();
   resolveOutputs();
 }
+
 void setInputFlags() {
   for(int i = 0; i < numOfInputs; i++) {
     int reading = digitalRead(inputPins[i]);
@@ -47,6 +55,7 @@ void setInputFlags() {
     lastInputState[i] = reading;
   }
 }
+
 void resolveInputFlags() {
   for(int i = 0; i < numOfInputs; i++) {
     if(inputFlags[i] == HIGH) {
@@ -55,6 +64,7 @@ void resolveInputFlags() {
     }
   }
 }
+
 void resolveOutputs() {
   myServoAngle = map(analogRead(A3), 0, 1023, 0, 180);
   switch(inputCounters[0]) {
@@ -93,6 +103,7 @@ void resolveOutputs() {
       }
   }
 }
+
 void writeAddress(int address, byte val)
 {
   Wire.beginTransmission(EEPROM_I2C_ADDRESS);
@@ -101,6 +112,7 @@ void writeAddress(int address, byte val)
   Wire.write(val);
   Wire.endTransmission();
 }
+
 byte readAddress(int address)
 {
   byte rData = 0xFF;
